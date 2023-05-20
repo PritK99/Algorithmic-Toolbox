@@ -1,25 +1,77 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <math.h>
 
-using std::vector;
+int global_count = 0;
 
-long long get_number_of_inversions(vector<int> &a, vector<int> &b, size_t left, size_t right) {
-  long long number_of_inversions = 0;
-  if (right <= left + 1) return number_of_inversions;
-  size_t ave = left + (right - left) / 2;
-  number_of_inversions += get_number_of_inversions(a, b, left, ave);
-  number_of_inversions += get_number_of_inversions(a, b, ave, right);
-  //write your code here
-  return number_of_inversions;
+using namespace std;
+
+void Merge(vector<int> &A, int left, int right, int mid)
+{
+    int p = left;
+    int q = mid;
+
+    vector<int> merged;
+
+    while (p < mid && q < right)
+    {
+        if (A[p] <= A[q])
+        {
+            merged.push_back(A[p]);
+            p++;
+        }
+        else
+        {
+            merged.push_back(A[q]);
+            global_count += mid - p; // Inversion
+            q++;
+        }
+    }
+
+    while (p < mid)
+    {
+        merged.push_back(A[p]);
+        p++;
+    }
+    while (q < right)
+    {
+        merged.push_back(A[q]);
+        q++;
+    }
+
+    for (int i = 0; i < merged.size(); i++)
+    {
+        A[left + i] = merged[i];
+    }
 }
 
-int main() {
-  int n;
-  std::cin >> n;
-  vector<int> a(n);
-  for (size_t i = 0; i < a.size(); i++) {
-    std::cin >> a[i];
-  }
-  vector<int> b(a.size());
-  std::cout << get_number_of_inversions(a, b, 0, a.size()) << '\n';
+void MergeSort(vector<int> &A, int begin, int end)
+{
+    if (end - begin == 1)
+    {
+        return;
+    }
+    int mid = floor((end - begin) / 2);
+    MergeSort(A, begin, begin + mid);
+    MergeSort(A, begin + mid, end);
+    Merge(A, begin, end, begin+mid);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    vector<int> v(n);
+
+    for (int i = 0; i < n; i++)
+    {
+        cin >> v[i];
+    }
+
+    MergeSort(v, 0, v.size());
+
+    cout << global_count;
+
+    return 0;
 }
