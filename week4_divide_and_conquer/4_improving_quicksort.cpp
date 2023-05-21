@@ -1,45 +1,78 @@
 #include <iostream>
 #include <vector>
-#include <cstdlib>
+#include <algorithm>
 
-using std::vector;
-using std::swap;
+using namespace std;
 
-int partition2(vector<int> &a, int l, int r) {
-  int x = a[l];
-  int j = l;
-  for (int i = l + 1; i <= r; i++) {
-    if (a[i] <= x) {
-      j++;
-      swap(a[i], a[j]);
-    }
-  }
-  swap(a[l], a[j]);
-  return j;
+void Swap(int &i, int &j)
+{
+  int temp = i;
+  i = j;
+  j = temp;
 }
 
-void randomized_quick_sort(vector<int> &a, int l, int r) {
-  if (l >= r) {
+int Partition(vector<int> &v, int pivot, int i, int j)
+{
+  if (i == j)
+  {
+    return i;
+  }
+
+  while (i <= j)
+  {
+    if (v[i] > v[pivot] && v[j] < v[pivot])
+    {
+      swap(v[i], v[j]);
+      i++;
+      j--;
+    }
+    else if (v[i] <= v[pivot])
+    {
+      i++;
+    }
+    else if (v[j] >= v[pivot])
+    {
+      j--;
+    }
+  }
+
+  Swap(v[pivot], v[i - 1]);
+  return i - 1;
+}
+
+void QuickSort(vector<int> &v, int pivot, int begin, int end)
+{
+  if (end <= begin)
+  {
     return;
   }
 
-  int k = l + rand() % (r - l + 1);
-  swap(a[l], a[k]);
-  int m = partition2(a, l, r);
+  int m = Partition(v, pivot, begin, end); // m represents position of partition
 
-  randomized_quick_sort(a, l, m - 1);
-  randomized_quick_sort(a, m + 1, r);
+  QuickSort(v, begin, begin, m - 1);
+  QuickSort(v, m + 1, m + 1, end);
 }
 
-int main() {
+int main()
+{
   int n;
-  std::cin >> n;
-  vector<int> a(n);
-  for (size_t i = 0; i < a.size(); ++i) {
-    std::cin >> a[i];
+  cin >> n;
+
+  vector<int> v(n);
+
+  for (int i = 0; i < n; i++)
+  {
+    cin >> v[i];
   }
-  randomized_quick_sort(a, 0, a.size() - 1);
-  for (size_t i = 0; i < a.size(); ++i) {
-    std::cout << a[i] << ' ';
+
+  int pivot = 0; // Initially the pivot element is element at 0th index
+
+  QuickSort(v, pivot, 0, v.size() - 1);
+
+  for (int i = 0; i < v.size(); i++)
+  {
+    cout << v[i] << " ";
   }
+
+  return 0;
 }
